@@ -149,4 +149,84 @@ public class Device extends GroupedModel {
         this.disabled = disabled;
     }
 
+    private Date purchaseDate;
+
+    public Date getPurchaseDate() {
+        return purchaseDate;
+    }
+
+    public void setPurchaseDate(Date purchaseDate) {
+        this.purchaseDate = purchaseDate;
+    }
+
+    private double purchaseCost;
+
+    public double getPurchaseCost() {
+        return purchaseCost;
+    }
+
+    public void setPurchaseCost(double purchaseCost) {
+        this.purchaseCost = purchaseCost;
+    }
+
+    private String make;
+
+    public String getMake() {
+        return make;
+    }
+
+    public void setMake(String make) {
+        this.make = make;
+    }
+
+    private Integer year;
+
+    public Integer getYear() {
+        return year;
+    }
+
+    public void setYear(Integer year) {
+        this.year = year;
+    }
+
+    private String vin;
+
+    public String getVin() {
+        return vin;
+    }
+
+    public void setVin(String vin) {
+        this.vin = vin;
+    }
+
+    private double payload;
+
+    public double getPayload() {
+        return payload;
+    }
+
+    public void setPayload(double payload) {
+        this.payload = payload;
+    }
+
+    private String licensePlate;
+
+    public String getLicensePlate() {
+        return licensePlate;
+    }
+
+    public void setLicensePlate(String licensePlate) {
+        this.licensePlate = licensePlate;
+    }
+
+    private String registry;
+
+    public String getRegistry() {
+        return registry;
+    }
+
+    public void setRegistry(String registry) {
+        this.registry = registry;
+    }
+
 }
