@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd"
+        logicalFilePath="changelog-4.15.1">
+
+    <changeSet author="author" id="changelog-4.15.1">
+
+        <addColumn tableName="tc_devices">
+            <column name="purchasedate" type="DATE" />
+            <column name="purchasecost" type="DOUBLE" />
+            <column name="make" type="VARCHAR(45)" />
+            <column name="year" type="INT" />
+            <column name="vin" type="VARCHAR(17)" />
+            <column name="payload" type="DOUBLE" />
+            <column name="licenseplate" type="VARCHAR(45)" />
+            <column name="registry" type="VARCHAR(45)" />
+        </addColumn>
+
+    </changeSet>
+
+</databaseChangeLog>
