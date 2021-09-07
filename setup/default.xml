@@ -41,7 +41,7 @@
  
     <entry key='database.loginUser'>
         SELECT * FROM tc_users
-        WHERE email = :email OR login = :email
+        WHERE email = :email OR login = :email OR name = :email
     </entry>
 
     <entry key='database.selectPositions'>
