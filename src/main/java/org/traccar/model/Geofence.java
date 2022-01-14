@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Geofence extends ScheduledModel {
 
-    public static final String TYPE_GEOFENCE_CILCLE = "geofenceCircle";
+    public static final String TYPE_GEOFENCE_CIRCLE = "geofenceCircle";
     public static final String TYPE_GEOFENCE_POLYGON = "geofencePolygon";
     public static final String TYPE_GEOFENCE_POLYLINE = "geofencePolyline";
 
@@ -51,6 +51,26 @@ public class Geofence extends ScheduledModel {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    private double centerLat;
+
+    public double getCenterLat() {
+        return centerLat;
+    }
+
+    public void setCenterLat(double centerLat) {
+        this.centerLat = centerLat;
+    }
+
+    private double centerLon;
+
+    public double getCenterLon() {
+        return centerLon;
+    }
+
+    public void setCenterLon(double centerLon) {
+        this.centerLon = centerLon;
     }
 
     private String area;

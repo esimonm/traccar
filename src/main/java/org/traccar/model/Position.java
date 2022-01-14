@@ -277,6 +277,16 @@ public class Position extends Message {
         this.address = address;
     }
 
+    private String vin;
+
+    public String getVin() {
+        return vin;
+    }
+
+    public void setVin(String vin) {
+        this.vin = vin;
+    }
+
     private double accuracy;
 
     public double getAccuracy() {

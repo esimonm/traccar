@@ -28,6 +28,10 @@ import org.traccar.database.DeviceManager;
 import org.traccar.database.GeofenceManager;
 import org.traccar.database.IdentityManager;
 import org.traccar.database.MaintenancesManager;
+import org.traccar.database.ServicesManager;
+import org.traccar.database.ItemsManager;
+import org.traccar.database.ItemTypesManager;
+import org.traccar.database.MaintenanceItemsManager;
 import org.traccar.database.StatisticsManager;
 import org.traccar.geocoder.AddressFormat;
 import org.traccar.geocoder.BanGeocoder;
@@ -73,6 +77,9 @@ import org.traccar.handler.events.FuelDropEventHandler;
 import org.traccar.handler.events.GeofenceEventHandler;
 import org.traccar.handler.events.IgnitionEventHandler;
 import org.traccar.handler.events.MaintenanceEventHandler;
+//import org.traccar.handler.events.ItemEventHandler;
+//import org.traccar.handler.events.ItemTypeEventHandler;
+//import org.traccar.handler.events.ServiceEventHandler;
 import org.traccar.handler.events.MotionEventHandler;
 import org.traccar.handler.events.OverspeedEventHandler;
 import org.traccar.reports.model.TripsConfig;
@@ -139,6 +146,26 @@ public class MainModule extends AbstractModule {
     public static MaintenancesManager provideMaintenancesManager() {
         return Context.getMaintenancesManager();
     }
+
+//    @Provides
+//    public static ServicesManager provideServicesManager() {
+//        return Context.getServicesManager();
+//    }
+//
+//    @Provides
+//    public static ItemsManager provideItemsManager() {
+//        return Context.getItemsManager();
+//    }
+//
+//    @Provides
+//    public static ItemTypesManager provideItemTypesManager() {
+//        return Context.getItemTypesManager();
+//    }
+//
+//    @Provides
+//    public static MaintenanceItemsManager provideMaintenanceItemsManager() {
+//        return Context.getMaintenanceItemsManager();
+//    }
 
     @Singleton
     @Provides
@@ -415,6 +442,34 @@ public class MainModule extends AbstractModule {
             IdentityManager identityManager, MaintenancesManager maintenancesManager) {
         return new MaintenanceEventHandler(identityManager, maintenancesManager);
     }
+
+//    @Singleton
+//    @Provides
+//    public static ItemEventHandler provideItemEventHandler(
+//            IdentityManager identityManager, ItemsManager itemsManager) {
+//        return new ItemEventHandler(identityManager, itemsManager);
+//    }
+//
+//    @Singleton
+//    @Provides
+//    public static ItemTypeEventHandler provideItemTypeEventHandler(
+//            IdentityManager identityManager, ItemTypesManager itemTypesManager) {
+//        return new ItemTypeEventHandler(identityManager, itemTypesManager);
+//    }
+//
+//    @Singleton
+//    @Provides
+//    public static MaintenanceItemEventHandler provideMaintenanceItemEventHandler(
+//            IdentityManager identityManager, MaintenanceItemsManager maintenanceItemsManager) {
+//        return new MaintenanceItemEventHandler(identityManager, maintenanceItemsManager);
+//    }
+//
+//    @Singleton
+//    @Provides
+//    public static ServiceEventHandler provideServiceEventHandler(
+//            IdentityManager identityManager, ServicesManager servicesManager) {
+//        return new ServiceEventHandler(identityManager, servicesManager);
+//    }
 
     @Singleton
     @Provides

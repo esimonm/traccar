@@ -1262,6 +1262,6 @@ public final class Keys {
     public static final ConfigKey<String> LOGGER_ATTRIBUTES = new ConfigKey<>(
             "logger.attributes",
             Collections.singletonList(KeyType.GLOBAL),
-            "time,position,speed,course,accuracy,result");
+            "vin,time,position,speed,course,accuracy,result");
 
 }

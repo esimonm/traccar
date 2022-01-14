@@ -200,27 +200,34 @@ public class TeltonikaProtocolDecoder extends BaseProtocolDecoder {
             case 2:
             case 3:
             case 4:
+                // CORRECT
                 position.set("di" + id, readValue(buf, length, false));
                 break;
             case 9:
+                // CORRECT
                 position.set(Position.PREFIX_ADC + 1, readValue(buf, length, false));
                 break;
             case 10:
                 position.set(Position.PREFIX_ADC + 2, readValue(buf, length, false));
                 break;
             case 16:
+                // CORRECT
                 position.set(Position.KEY_ODOMETER, readValue(buf, length, false));
                 break;
             case 17:
+                // CORRECT
                 position.set("axisX", readValue(buf, length, true));
                 break;
             case 18:
+                // CORRECT
                 position.set("axisY", readValue(buf, length, true));
                 break;
             case 19:
+                // CORRECT
                 position.set("axisZ", readValue(buf, length, true));
                 break;
             case 21:
+                // CORRECT
                 position.set(Position.KEY_RSSI, readValue(buf, length, false));
                 break;
             case 25:
@@ -229,65 +236,111 @@ public class TeltonikaProtocolDecoder extends BaseProtocolDecoder {
             case 28:
                 position.set(Position.PREFIX_TEMP + (id - 24 + 4), readValue(buf, length, true) * 0.1);
                 break;
+            case 31:
+                // TO TEST
+                position.set(Position.KEY_ENGINE_LOAD, readValue(buf, length, false));
+                break;
+            case 32:
+                // TO TEST
+                position.set(Position.KEY_COOLANT_TEMP, readValue(buf, length, false));
+                break;
+            case 36:
+                // TO TEST
+                position.set(Position.KEY_RPM, readValue(buf, length, false));
+                break;
+            case 37:
+                // TO TEST
+                position.set(Position.KEY_OBD_SPEED, readValue(buf, length, false));
+                break;
+            case 41:
+                // TO TEST
+                position.set(Position.KEY_THROTTLE, readValue(buf, length, false));
+                break;
+            case 48:
+                // TO TEST
+                position.set(Position.KEY_FUEL_LEVEL, readValue(buf, length, false));
+                break;
+            case 60:
+                // TO TEST
+                position.set(Position.KEY_FUEL_CONSUMPTION, readValue(buf, length, true));
+                break;
             case 66:
+                // CORRECT
                 position.set(Position.KEY_POWER, readValue(buf, length, false) * 0.001);
                 break;
             case 67:
+                // CORRECT
                 position.set(Position.KEY_BATTERY, readValue(buf, length, false) * 0.001);
                 break;
             case 69:
+                // CORRECT
                 position.set("gpsStatus", readValue(buf, length, false));
                 break;
             case 72:
             case 73:
             case 74:
+                // CORRECT
                 position.set(Position.PREFIX_TEMP + (id - 71), readValue(buf, length, true) * 0.1);
                 break;
             case 78:
+                // CORRECT
                 long driverUniqueId = readValue(buf, length, false);
                 if (driverUniqueId != 0) {
                     position.set(Position.KEY_DRIVER_UNIQUE_ID, String.format("%016X", driverUniqueId));
                 }
                 break;
             case 80:
+                // CORRECT
                 position.set("workMode", readValue(buf, length, false));
                 break;
             case 90:
+                // CORRECT
                 position.set(Position.KEY_DOOR, readValue(buf, length, false));
                 break;
             case 115:
+                // CORRECT
                 position.set(Position.KEY_COOLANT_TEMP, readValue(buf, length, true) * 0.1);
                 break;
             case 179:
+                // CORRECT
                 position.set(Position.PREFIX_OUT + 1, readValue(buf, length, false) == 1);
                 break;
             case 180:
+                // CORRECT
                 position.set(Position.PREFIX_OUT + 2, readValue(buf, length, false) == 1);
                 break;
             case 181:
+                // CORRECT
                 position.set(Position.KEY_PDOP, readValue(buf, length, false) * 0.1);
                 break;
             case 182:
+                // CORRECT
                 position.set(Position.KEY_HDOP, readValue(buf, length, false) * 0.1);
                 break;
             case 199:
+                // CORRECT
                 position.set(Position.KEY_ODOMETER_TRIP, readValue(buf, length, false));
                 break;
             case 236:
+                // CORRECT
                 if (readValue(buf, length, false) == 1) {
                     position.set(Position.KEY_ALARM, Position.ALARM_GENERAL);
                 }
                 break;
             case 239:
+                // CORRECT
                 position.set(Position.KEY_IGNITION, readValue(buf, length, false) == 1);
                 break;
             case 240:
+                // CORRECT
                 position.set(Position.KEY_MOTION, readValue(buf, length, false) == 1);
                 break;
             case 241:
+                // CORRECT
                 position.set(Position.KEY_OPERATOR, readValue(buf, length, false));
                 break;
             case 253:
+                // CORRECT - GREEN DRIVING!
                 switch ((int) readValue(buf, length, false)) {
                     case 1:
                         position.set(Position.KEY_ALARM, Position.ALARM_ACCELERATION);
@@ -301,6 +354,10 @@ public class TeltonikaProtocolDecoder extends BaseProtocolDecoder {
                     default:
                         break;
                 }
+                break;
+            case 256:
+                // TO TEST
+                position.set(Position.KEY_VIN, readValue(buf, length, false));
                 break;
             case 389:
                 if (BitUtil.between(readValue(buf, length, false), 4, 8) == 1) {
@@ -637,11 +694,22 @@ public class TeltonikaProtocolDecoder extends BaseProtocolDecoder {
 
         ByteBuf buf = (ByteBuf) msg;
 
+        LOGGER.info("Channel: " + channel.toString());
+        LOGGER.info("SocketAddress: " + remoteAddress.toString());
+        LOGGER.info("ByteBuf: " + buf.toString());
+
+        Object decoded;
         if (connectionless) {
-            return decodeUdp(channel, remoteAddress, buf);
+            LOGGER.info("decodeUdp");
+            decoded = decodeUdp(channel, remoteAddress, buf);
+            // return decodeUdp(channel, remoteAddress, buf);
         } else {
-            return decodeTcp(channel, remoteAddress, buf);
+            LOGGER.info("decodeTcp");
+            decoded = decodeTcp(channel, remoteAddress, buf);
+            // return decodeTcp(channel, remoteAddress, buf);
         }
+        LOGGER.info("decoded: " + decoded.toString());
+        return decoded;
     }
 
     private Object decodeTcp(Channel channel, SocketAddress remoteAddress, ByteBuf buf) throws Exception {

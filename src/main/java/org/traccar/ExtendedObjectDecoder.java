@@ -21,6 +21,8 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.traccar.config.Keys;
 import org.traccar.helper.DataConverter;
 import org.traccar.model.Position;
@@ -30,6 +32,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 
 public abstract class ExtendedObjectDecoder extends ChannelInboundHandlerAdapter {
+
+//    protected static final Logger LOGGER = LoggerFactory.getLogger(BaseProtocolDecoder.class);
 
     private void saveOriginal(Object decodedMessage, Object originalMessage) {
         if (Context.getConfig().getBoolean(Keys.DATABASE_SAVE_ORIGINAL) && decodedMessage instanceof Position) {

@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd"
+  logicalFilePath="changelog-4.15.3">
+
+  <changeSet author="author" id="changelog-4.15.3">
+
+    <createTable tableName="tc_items">
+      <column name="id" type="INT" autoIncrement="true">
+        <constraints primaryKey="true" />
+      </column>
+<!--      <column name="uniqueid" type="VARCHAR(128)">
+        <constraints nullable="false" />
+      </column>-->
+      <column name="typeid" type="INT">
+        <constraints nullable="true" />
+      </column>
+      <column name="name" type="VARCHAR(100)" />
+      <column name="brand" type="VARCHAR(100)" />
+      <column name="code" type="VARCHAR(100)" />
+      <column name="cost" type="DOUBLE" defaultValueNumeric="0">
+        <constraints nullable="false" />
+      </column>
+      <column name="attributes" type="VARCHAR(4000)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+    <!--<addUniqueConstraint tableName="tc_items" columnNames="uniqueid" constraintName="uk_items_uniqueid" />-->
+
+    <createTable tableName="tc_itemtypes">
+      <column name="id" type="INT" autoIncrement="true">
+        <constraints primaryKey="true" />
+      </column>
+      <column name="name" type="VARCHAR(100)" />
+      <column name="attributes" type="VARCHAR(4000)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint baseTableName="tc_items" baseColumnNames="typeid" constraintName="fk_items_typeid" onDelete="SET NULL" referencedColumnNames="id" referencedTableName="tc_itemtypes" />
+
+    <createTable tableName="tc_maintenance_item">
+      <column name="itemid" type="INT">
+        <constraints nullable="false" />
+      </column>
+      <column name="maintenanceid" type="INT">
+        <constraints nullable="false" />
+      </column>
+      <column name="quantity" type="DOUBLE" defaultValueNumeric="0">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint baseTableName="tc_maintenance_item" baseColumnNames="itemid" constraintName="fk_maintenance_item_itemid" referencedTableName="tc_items" referencedColumnNames="id" onDelete="CASCADE" />
+    <addForeignKeyConstraint baseTableName="tc_maintenance_item" baseColumnNames="maintenanceid" constraintName="fk_maintenance_item_maintenanceid" referencedTableName="tc_maintenances" referencedColumnNames="id" onDelete="CASCADE" />
+
+    <createTable tableName="tc_services">
+      <column name="id" type="INT" autoIncrement="true">
+        <constraints primaryKey="true" />
+      </column>
+      <!--<column name="uniqueid" type="VARCHAR(128)">
+        <constraints nullable="false" />
+      </column>-->
+      <column name="deviceid" type="INT">
+        <constraints nullable="true" />
+      </column>
+      <column name="maintenanceid" type="INT">
+        <constraints nullable="true" />
+      </column>
+      <column name="status" type="VARCHAR(100)">
+        <constraints nullable="true" />
+      </column>
+      <column name="name" type="VARCHAR(100)" />
+      <column name="description" type="VARCHAR(512)" />
+      <column name="distance" type="DOUBLE" defaultValueNumeric="0">
+        <constraints nullable="false" />
+      </column>
+      <column name="hours" type="DOUBLE" defaultValueNumeric="0">
+        <constraints nullable="false" />
+      </column>
+      <column name="datestart" type="TIMESTAMP">
+        <constraints nullable="false" />
+      </column>
+      <column name="dateend" type="TIMESTAMP">
+        <constraints nullable="false" />
+      </column>
+      <column name="attributes" type="VARCHAR(4000)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+    <!--<addUniqueConstraint tableName="tc_services" columnNames="uniqueid" constraintName="uk_services_uniqueid" />-->
+
+    <addForeignKeyConstraint baseTableName="tc_services" baseColumnNames="deviceid" constraintName="fk_services_deviceid" onDelete="SET NULL" referencedColumnNames="id" referencedTableName="tc_devices" />
+    <addForeignKeyConstraint baseTableName="tc_services" baseColumnNames="maintenanceid" constraintName="fk_services_maintenanceid" onDelete="SET NULL" referencedColumnNames="id" referencedTableName="tc_maintenances" />
+
+    <!--
+    <createTable tableName="tc_servicestatus">
+      <column name="id" type="INT" autoIncrement="true">
+        <constraints primaryKey="true" />
+      </column>
+      <column name="name" type="VARCHAR(50)" />
+    </createTable>
+
+    <addForeignKeyConstraint baseTableName="tc_services" baseColumnNames="statusid" constraintName="fk_services_statusid" onDelete="SET NULL" referencedColumnNames="id" referencedTableName="tc_servicestatus" />
+    -->
+
+    <createTable tableName="tc_service_item">
+      <column name="itemid" type="INT">
+        <constraints nullable="false" />
+      </column>
+      <column name="serviceid" type="INT">
+        <constraints nullable="false" />
+      </column>
+      <column name="quantity" type="DOUBLE" defaultValueNumeric="0">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint baseTableName="tc_service_item" baseColumnNames="itemid" constraintName="fk_service_item_itemid" referencedTableName="tc_items" referencedColumnNames="id" onDelete="CASCADE" />
+    <addForeignKeyConstraint baseTableName="tc_service_item" baseColumnNames="serviceid" constraintName="fk_service_item_serviceid" referencedTableName="tc_services" referencedColumnNames="id" onDelete="CASCADE" />
+
+    <createTable tableName="tc_group_service">
+      <column name="groupid" type="INT">
+        <constraints nullable="false" />
+      </column>
+      <column name="serviceid" type="INT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <createTable tableName="tc_group_item">
+      <column name="groupid" type="INT">
+        <constraints nullable="false" />
+      </column>
+      <column name="itemid" type="INT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <createTable tableName="tc_group_itemtype">
+      <column name="groupid" type="INT">
+        <constraints nullable="false" />
+      </column>
+      <column name="itemtypeid" type="INT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <createTable tableName="tc_user_service">
+      <column name="userid" type="INT">
+        <constraints nullable="false" />
+      </column>
+      <column name="serviceid" type="INT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <createTable tableName="tc_user_item">
+      <column name="userid" type="INT">
+        <constraints nullable="false" />
+      </column>
+      <column name="itemid" type="INT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <createTable tableName="tc_user_itemtype">
+      <column name="userid" type="INT">
+        <constraints nullable="false" />
+      </column>
+      <column name="itemtypeid" type="INT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <createTable tableName="tc_device_service">
+      <column name="deviceid" type="INT">
+        <constraints nullable="false" />
+      </column>
+      <column name="serviceid" type="INT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <createTable tableName="tc_device_item">
+      <column name="deviceid" type="INT">
+        <constraints nullable="false" />
+      </column>
+      <column name="itemid" type="INT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <createTable tableName="tc_device_itemtype">
+      <column name="deviceid" type="INT">
+        <constraints nullable="false" />
+      </column>
+      <column name="itemtypeid" type="INT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint baseTableName="tc_group_service" baseColumnNames="serviceid" constraintName="fk_group_service_serviceid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_services" />
+    <addForeignKeyConstraint baseTableName="tc_group_service" baseColumnNames="groupid" constraintName="fk_group_service_groupid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_groups" />
+
+    <addForeignKeyConstraint baseTableName="tc_group_item" baseColumnNames="itemid" constraintName="fk_group_item_itemid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_items" />
+    <addForeignKeyConstraint baseTableName="tc_group_item" baseColumnNames="groupid" constraintName="fk_group_item_groupid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_groups" />
+
+    <addForeignKeyConstraint baseTableName="tc_group_itemtype" baseColumnNames="itemtypeid" constraintName="fk_group_itemtype_itemtypeid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_itemtypes" />
+    <addForeignKeyConstraint baseTableName="tc_group_itemtype" baseColumnNames="groupid" constraintName="fk_group_itemtype_groupid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_groups" />
+
+    <addForeignKeyConstraint baseTableName="tc_user_service" baseColumnNames="serviceid" constraintName="fk_user_service_serviceid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_services" />
+    <addForeignKeyConstraint baseTableName="tc_user_service" baseColumnNames="userid" constraintName="fk_user_service_userid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_users" />
+
+    <addForeignKeyConstraint baseTableName="tc_user_item" baseColumnNames="itemid" constraintName="fk_user_item_itemid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_items" />
+    <addForeignKeyConstraint baseTableName="tc_user_item" baseColumnNames="userid" constraintName="fk_user_item_userid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_users" />
+
+    <addForeignKeyConstraint baseTableName="tc_user_itemtype" baseColumnNames="itemtypeid" constraintName="fk_user_itemtype_itemtypeid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_itemtypes" />
+    <addForeignKeyConstraint baseTableName="tc_user_itemtype" baseColumnNames="userid" constraintName="fk_user_itemtype_userid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_users" />
+
+    <addForeignKeyConstraint baseTableName="tc_device_service" baseColumnNames="serviceid" constraintName="fk_device_service_serviceid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_services" />
+    <addForeignKeyConstraint baseTableName="tc_device_service" baseColumnNames="deviceid" constraintName="fk_device_service_deviceid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_devices" />
+
+    <addForeignKeyConstraint baseTableName="tc_device_item" baseColumnNames="itemid" constraintName="fk_device_item_itemid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_items" />
+    <addForeignKeyConstraint baseTableName="tc_device_item" baseColumnNames="deviceid" constraintName="fk_device_item_deviceid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_devices" />
+
+    <addForeignKeyConstraint baseTableName="tc_device_itemtype" baseColumnNames="itemtypeid" constraintName="fk_device_itemtype_itemtypeid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_itemtypes" />
+    <addForeignKeyConstraint baseTableName="tc_device_itemtype" baseColumnNames="deviceid" constraintName="fk_device_itemtype_deviceid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_devices" />
+
+  </changeSet>
+
+</databaseChangeLog>

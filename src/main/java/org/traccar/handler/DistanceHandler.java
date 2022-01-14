@@ -55,7 +55,7 @@ public class DistanceHandler extends BaseDataHandler {
         Position last = identityManager != null ? identityManager.getLastPosition(position.getDeviceId()) : null;
         if (last != null) {
             totalDistance = last.getDouble(Position.KEY_TOTAL_DISTANCE);
-            if (!position.getAttributes().containsKey(Position.KEY_DISTANCE)) {
+            if (!position.getAttributes().containsKey(Position.KEY_DISTANCE) && last.getLatitude() != 0 && last.getLongitude() != 0) {
                 distance = DistanceCalculator.distance(
                         position.getLatitude(), position.getLongitude(),
                         last.getLatitude(), last.getLongitude());

@@ -33,14 +33,7 @@ import org.traccar.database.ExtendedObjectManager;
 import org.traccar.database.ManagableObjects;
 import org.traccar.database.SimpleObjectManager;
 import org.traccar.helper.LogAction;
-import org.traccar.model.BaseModel;
-import org.traccar.model.Calendar;
-import org.traccar.model.Command;
-import org.traccar.model.Device;
-import org.traccar.model.Group;
-import org.traccar.model.GroupedModel;
-import org.traccar.model.ScheduledModel;
-import org.traccar.model.User;
+import org.traccar.model.*;
 
 public abstract class BaseObjectResource<T extends BaseModel> extends BaseResource {
 
@@ -54,8 +47,9 @@ public abstract class BaseObjectResource<T extends BaseModel> extends BaseResour
         return baseClass;
     }
 
-    protected final Set<Long> getSimpleManagerItems(BaseObjectManager<T> manager, boolean all,  long userId) {
+    protected final Set<Long> getSimpleManagerItems(BaseObjectManager<T> manager, boolean all, long userId) {
         Set<Long> result;
+
         if (all) {
             if (Context.getPermissionsManager().getUserAdmin(getUserId())) {
                 result = manager.getAllItems();
@@ -106,8 +100,10 @@ public abstract class BaseObjectResource<T extends BaseModel> extends BaseResour
         manager.addItem(entity);
         LogAction.create(getUserId(), entity);
 
-        Context.getDataManager().linkObject(User.class, getUserId(), baseClass, entity.getId(), true);
-        LogAction.link(getUserId(), User.class, getUserId(), baseClass, entity.getId());
+        if (!baseClass.equals(MaintenanceItem.class)) {
+            Context.getDataManager().linkObject(User.class, getUserId(), baseClass, entity.getId(), true);
+            LogAction.link(getUserId(), User.class, getUserId(), baseClass, entity.getId());
+        }
 
         if (manager instanceof SimpleObjectManager) {
             ((SimpleObjectManager<T>) manager).refreshUserItems();
@@ -136,7 +132,10 @@ public abstract class BaseObjectResource<T extends BaseModel> extends BaseResour
             Context.getPermissionsManager().checkPermission(
                     Calendar.class, getUserId(), ((ScheduledModel) entity).getCalendarId());
         }
-        Context.getPermissionsManager().checkPermission(baseClass, getUserId(), entity.getId());
+
+        if (!baseClass.equals(MaintenanceItem.class)) {
+            Context.getPermissionsManager().checkPermission(baseClass, getUserId(), entity.getId());
+        }
 
         Context.getManager(baseClass).updateItem(entity);
         LogAction.edit(getUserId(), entity);
@@ -145,6 +144,11 @@ public abstract class BaseObjectResource<T extends BaseModel> extends BaseResour
             Context.getPermissionsManager().refreshDeviceAndGroupPermissions();
             Context.getPermissionsManager().refreshAllExtendedPermissions();
         }
+
+        if (baseClass.equals(MaintenanceItem.class)) {
+            Context.getManager(MaintenanceItem.class).refreshItems();
+        }
+
         return Response.ok(entity).build();
     }
 

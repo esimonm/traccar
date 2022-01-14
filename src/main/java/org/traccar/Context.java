@@ -36,6 +36,13 @@ import org.traccar.database.IdentityManager;
 import org.traccar.database.LdapProvider;
 import org.traccar.database.MailManager;
 import org.traccar.database.MaintenancesManager;
+import org.traccar.database.ServicesManager;
+import org.traccar.database.ItemsManager;
+import org.traccar.database.ItemTypesManager;
+import org.traccar.database.MaintenanceItemsManager;
+import org.traccar.database.AssignmentsManager;
+import org.traccar.database.CompaniesManager;
+import org.traccar.database.WorksitesManager;
 import org.traccar.database.MediaManager;
 import org.traccar.database.NotificationManager;
 import org.traccar.database.OrderManager;
@@ -53,6 +60,13 @@ import org.traccar.model.Driver;
 import org.traccar.model.Geofence;
 import org.traccar.model.Group;
 import org.traccar.model.Maintenance;
+import org.traccar.model.Service;
+import org.traccar.model.Item;
+import org.traccar.model.ItemType;
+import org.traccar.model.MaintenanceItem;
+import org.traccar.model.Assignment;
+import org.traccar.model.Company;
+import org.traccar.model.Worksite;
 import org.traccar.model.Notification;
 import org.traccar.model.Order;
 import org.traccar.model.User;
@@ -237,6 +251,48 @@ public final class Context {
         return maintenancesManager;
     }
 
+    private static ServicesManager servicesManager;
+
+    public static ServicesManager getServicesManager() {
+        return servicesManager;
+    }
+
+    private static ItemsManager itemsManager;
+
+    public static ItemsManager getItemsManager() {
+        return itemsManager;
+    }
+
+    private static ItemTypesManager itemTypesManager;
+
+    public static ItemTypesManager getItemTypesManager() {
+        return itemTypesManager;
+    }
+
+    private static MaintenanceItemsManager maintenanceItemsManager;
+
+    public static MaintenanceItemsManager getMaintenanceItemsManager() {
+        return maintenanceItemsManager;
+    }
+
+    private static AssignmentsManager assignmentsManager;
+
+    public static AssignmentsManager getAssignmentsManager() {
+        return assignmentsManager;
+    }
+
+    private static CompaniesManager companiesManager;
+
+    public static CompaniesManager getCompaniesManager() {
+        return companiesManager;
+    }
+
+    private static WorksitesManager worksitesManager;
+
+    public static WorksitesManager getWorksitesManager() {
+        return worksitesManager;
+    }
+
     private static OrderManager orderManager;
 
     public static OrderManager getOrderManager() {
@@ -347,6 +403,13 @@ public final class Context {
 
         orderManager = new OrderManager(dataManager);
 
+        servicesManager = new ServicesManager(dataManager);
+        itemsManager = new ItemsManager(dataManager);
+        itemTypesManager = new ItemTypesManager(dataManager);
+        maintenanceItemsManager = new MaintenanceItemsManager(dataManager);
+        assignmentsManager = new AssignmentsManager(dataManager);
+        companiesManager = new CompaniesManager(dataManager);
+        worksitesManager = new WorksitesManager(dataManager);
     }
 
     private static void initEventsModule() {
@@ -405,6 +468,20 @@ public final class Context {
             return (BaseObjectManager<T>) commandsManager;
         } else if (clazz.equals(Maintenance.class)) {
             return (BaseObjectManager<T>) maintenancesManager;
+        } else if (clazz.equals(Service.class)) {
+            return (BaseObjectManager<T>) servicesManager;
+        } else if (clazz.equals(Item.class)) {
+            return (BaseObjectManager<T>) itemsManager;
+        } else if (clazz.equals(ItemType.class)) {
+            return (BaseObjectManager<T>) itemTypesManager;
+        } else if (clazz.equals(MaintenanceItem.class)) {
+            return (BaseObjectManager<T>) maintenanceItemsManager;
+        } else if (clazz.equals(Assignment.class)) {
+            return (BaseObjectManager<T>) assignmentsManager;
+        } else if (clazz.equals(Company.class)) {
+            return (BaseObjectManager<T>) companiesManager;
+        } else if (clazz.equals(Worksite.class)) {
+            return (BaseObjectManager<T>) worksitesManager;
         } else if (clazz.equals(Notification.class)) {
             return (BaseObjectManager<T>) notificationManager;
         } else if (clazz.equals(Order.class)) {

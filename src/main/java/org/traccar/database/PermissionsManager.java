@@ -27,6 +27,13 @@ import org.traccar.model.Driver;
 import org.traccar.model.Geofence;
 import org.traccar.model.Group;
 import org.traccar.model.Maintenance;
+import org.traccar.model.Service;
+import org.traccar.model.Item;
+import org.traccar.model.ItemType;
+//import org.traccar.model.MaintenanceItem;
+import org.traccar.model.Assignment;
+import org.traccar.model.Company;
+import org.traccar.model.Worksite;
 import org.traccar.model.ManagedUser;
 import org.traccar.model.Notification;
 import org.traccar.model.Order;
@@ -366,6 +373,21 @@ public class PermissionsManager {
         }
     }
 
+    public void checkMaintenance(long userId, long maintenanceId) throws SecurityException {
+        System.out.println("Context.getMaintenancesManager().getUserItems(userId).contains(maintenanceId): " + Context.getMaintenancesManager().getUserItems(userId).contains(maintenanceId));
+        System.out.println("getUserAdmin(userId): " + getUserAdmin(userId));
+
+        if (!Context.getMaintenancesManager().getUserItems(userId).contains(maintenanceId) && !getUserAdmin(userId)) {
+            checkManager(userId);
+            for (long managedUserId : usersManager.getUserItems(userId)) {
+                if (Context.getMaintenancesManager().getUserItems(managedUserId).contains(maintenanceId)) {
+                    return;
+                }
+            }
+            throw new SecurityException("Device access denied");
+        }
+    }
+
     public void checkRegistration(long userId) {
         if (!server.getRegistration() && !getUserAdmin(userId)) {
             throw new SecurityException("Registration disabled");
@@ -394,6 +416,18 @@ public class PermissionsManager {
             manager = Context.getCommandsManager();
         } else if (object.equals(Maintenance.class)) {
             manager = Context.getMaintenancesManager();
+        } else if (object.equals(Service.class)) {
+            manager = Context.getServicesManager();
+        } else if (object.equals(Item.class)) {
+            manager = Context.getItemsManager();
+        } else if (object.equals(ItemType.class)) {
+            manager = Context.getItemTypesManager();
+        } else if (object.equals(Assignment.class)) {
+            manager = Context.getAssignmentsManager();
+        } else if (object.equals(Company.class)) {
+            manager = Context.getCompaniesManager();
+        } else if (object.equals(Worksite.class)) {
+            manager = Context.getWorksitesManager();
         } else if (object.equals(Notification.class)) {
             manager = Context.getNotificationManager();
         } else if (object.equals(Order.class)) {
@@ -422,6 +456,12 @@ public class PermissionsManager {
         Context.getAttributesManager().refreshUserItems();
         Context.getCommandsManager().refreshUserItems();
         Context.getMaintenancesManager().refreshUserItems();
+        Context.getItemsManager().refreshUserItems();
+        Context.getItemTypesManager().refreshUserItems();
+        Context.getServicesManager().refreshUserItems();
+        Context.getAssignmentsManager().refreshUserItems();
+        Context.getCompaniesManager().refreshUserItems();
+        Context.getWorksitesManager().refreshUserItems();
         if (Context.getNotificationManager() != null) {
             Context.getNotificationManager().refreshUserItems();
         }
@@ -435,6 +475,12 @@ public class PermissionsManager {
         Context.getAttributesManager().refreshExtendedPermissions();
         Context.getCommandsManager().refreshExtendedPermissions();
         Context.getMaintenancesManager().refreshExtendedPermissions();
+        Context.getItemsManager().refreshExtendedPermissions();
+        Context.getItemTypesManager().refreshExtendedPermissions();
+        Context.getServicesManager().refreshExtendedPermissions();
+        Context.getAssignmentsManager().refreshExtendedPermissions();
+        Context.getCompaniesManager().refreshExtendedPermissions();
+        Context.getWorksitesManager().refreshExtendedPermissions();
     }
 
     public void refreshPermissions(Permission permission) {
@@ -457,6 +503,18 @@ public class PermissionsManager {
                 Context.getCommandsManager().refreshUserItems();
             } else if (permission.getPropertyClass().equals(Maintenance.class)) {
                 Context.getMaintenancesManager().refreshUserItems();
+            } else if (permission.getPropertyClass().equals(Service.class)) {
+                Context.getServicesManager().refreshUserItems();
+            } else if (permission.getPropertyClass().equals(Item.class)) {
+                Context.getItemsManager().refreshUserItems();
+            } else if (permission.getPropertyClass().equals(ItemType.class)) {
+                Context.getItemTypesManager().refreshUserItems();
+            } else if (permission.getPropertyClass().equals(Assignment.class)) {
+                Context.getAssignmentsManager().refreshUserItems();
+            } else if (permission.getPropertyClass().equals(Company.class)) {
+                Context.getCompaniesManager().refreshUserItems();
+            } else if (permission.getPropertyClass().equals(Worksite.class)) {
+                Context.getWorksitesManager().refreshUserItems();
             } else if (permission.getPropertyClass().equals(Order.class)) {
                 Context.getOrderManager().refreshUserItems();
             } else if (permission.getPropertyClass().equals(Notification.class)
@@ -474,11 +532,28 @@ public class PermissionsManager {
                 Context.getCommandsManager().refreshExtendedPermissions();
             } else if (permission.getPropertyClass().equals(Maintenance.class)) {
                 Context.getMaintenancesManager().refreshExtendedPermissions();
+            } else if (permission.getPropertyClass().equals(Item.class)) {
+                Context.getItemsManager().refreshExtendedPermissions();
+            } else if (permission.getPropertyClass().equals(ItemType.class)) {
+                Context.getItemTypesManager().refreshExtendedPermissions();
+            } else if (permission.getPropertyClass().equals(Service.class)) {
+                Context.getServicesManager().refreshExtendedPermissions();
+            } else if (permission.getPropertyClass().equals(Assignment.class)) {
+                Context.getAssignmentsManager().refreshExtendedPermissions();
+            } else if (permission.getPropertyClass().equals(Company.class)) {
+                Context.getCompaniesManager().refreshExtendedPermissions();
+            } else if (permission.getPropertyClass().equals(Worksite.class)) {
+                Context.getWorksitesManager().refreshExtendedPermissions();
             } else if (permission.getPropertyClass().equals(Order.class)) {
                 Context.getOrderManager().refreshExtendedPermissions();
             } else if (permission.getPropertyClass().equals(Notification.class)
                     && Context.getNotificationManager() != null) {
                 Context.getNotificationManager().refreshExtendedPermissions();
+            }
+        } else if (permission.getOwnerClass().equals(Maintenance.class)) {
+            if (permission.getPropertyClass().equals(Item.class)) {
+                Context.getItemsManager().refreshExtendedPermissions();
+                Context.getMaintenanceItemsManager().refreshItems();
             }
         }
     }

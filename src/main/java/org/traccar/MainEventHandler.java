@@ -68,6 +68,9 @@ public class MainEventHandler extends ChannelInboundHandlerAdapter {
             builder.append("id: ").append(uniqueId);
             for (String attribute : logAttributes) {
                 switch (attribute) {
+                    case "vin":
+                        builder.append(", vin: ").append(position.getVin());
+                        break;
                     case "time":
                         builder.append(", time: ").append(DateUtil.formatDate(position.getFixTime(), false));
                         break;

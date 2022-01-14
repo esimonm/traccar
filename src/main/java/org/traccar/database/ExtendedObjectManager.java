@@ -28,6 +28,8 @@ import org.slf4j.LoggerFactory;
 import org.traccar.Context;
 import org.traccar.model.Device;
 import org.traccar.model.Group;
+import org.traccar.model.Maintenance;
+import org.traccar.model.Item;
 import org.traccar.model.Permission;
 import org.traccar.model.BaseModel;
 
@@ -35,6 +37,7 @@ public abstract class ExtendedObjectManager<T extends BaseModel> extends SimpleO
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExtendedObjectManager.class);
 
+    private final Map<Long, Set<Long>> maintenanceItems = new ConcurrentHashMap<>();
     private final Map<Long, Set<Long>> deviceItems = new ConcurrentHashMap<>();
     private final Map<Long, Set<Long>> deviceItemsWithGroups = new ConcurrentHashMap<>();
     private final Map<Long, Set<Long>> groupItems = new ConcurrentHashMap<>();
@@ -86,6 +89,20 @@ public abstract class ExtendedObjectManager<T extends BaseModel> extends SimpleO
         }
     }
 
+    public final Set<Long> getMaintenanceItems(long maintenanceId) {
+        try {
+            readLock();
+            Set<Long> result = maintenanceItems.get(maintenanceId);
+            if (result != null) {
+                return new HashSet<>(result);
+            } else {
+                return new HashSet<>();
+            }
+        } finally {
+            readUnlock();
+        }
+    }
+
     @Override
     public void removeItem(long itemId) throws SQLException {
         super.removeItem(itemId);
@@ -101,11 +118,20 @@ public abstract class ExtendedObjectManager<T extends BaseModel> extends SimpleO
                 Collection<Permission> databaseDevicePermissions =
                         getDataManager().getPermissions(Device.class, getBaseClass());
 
+                Collection<Permission> databaseMaintenancePermissions = null;
+
+                if (getBaseClass() == Item.class) {
+                    databaseMaintenancePermissions = getDataManager().getPermissions(Maintenance.class, getBaseClass());
+                } else if (getBaseClass() == Maintenance.class) {
+                    databaseMaintenancePermissions = getDataManager().getPermissions(getBaseClass(), Item.class);
+                }
+
                 writeLock();
 
                 groupItems.clear();
                 deviceItems.clear();
                 deviceItemsWithGroups.clear();
+                maintenanceItems.clear();
 
                 for (Permission groupPermission : databaseGroupPermissions) {
                     groupItems
@@ -120,6 +146,14 @@ public abstract class ExtendedObjectManager<T extends BaseModel> extends SimpleO
                     deviceItemsWithGroups
                             .computeIfAbsent(devicePermission.getOwnerId(), key -> new HashSet<>())
                             .add(devicePermission.getPropertyId());
+                }
+
+                if (databaseMaintenancePermissions != null) {
+                    for (Permission maintenancePermission : databaseMaintenancePermissions) {
+                        maintenanceItems
+                                .computeIfAbsent(maintenancePermission.getOwnerId(), key -> new HashSet<>())
+                                .add(maintenancePermission.getPropertyId());
+                    }
                 }
 
                 for (Device device : Context.getDeviceManager().getAllDevices()) {

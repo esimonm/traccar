@@ -43,7 +43,7 @@ import java.util.TimeZone;
 
 public abstract class BaseProtocolDecoder extends ExtendedObjectDecoder {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BaseProtocolDecoder.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(BaseProtocolDecoder.class);
 
     private static final String PROTOCOL_UNKNOWN = "unknown";
 
@@ -203,6 +203,7 @@ public abstract class BaseProtocolDecoder extends ExtendedObjectDecoder {
                 position.setSpeed(last.getSpeed());
                 position.setCourse(last.getCourse());
                 position.setAccuracy(last.getAccuracy());
+                position.setVin(last.getVin());
             } else {
                 position.setFixTime(new Date(0));
             }

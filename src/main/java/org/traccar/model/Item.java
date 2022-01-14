@@ -16,7 +16,7 @@
  */
 package org.traccar.model;
 
-public class Maintenance extends ExtendedModel {
+public class Item extends ExtendedModel {
 
     private String name;
 
@@ -28,54 +28,43 @@ public class Maintenance extends ExtendedModel {
         this.name = name;
     }
 
-    private String type;
+    private int typeId;
 
-    public String getType() {
-        return type;
+    public int getTypeId() {
+        return typeId;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setTypeId(int typeId) {
+        this.typeId = typeId;
     }
 
-    private double start;
+    private String brand;
 
-    public double getStart() {
-        return start;
+    public String getBrand() {
+        return brand;
     }
 
-    public void setStart(double start) {
-        this.start = start;
+    public void setBrand(String brand) {
+        this.brand = brand;
     }
 
-    private double period;
+    private String code;
 
-    public double getPeriod() {
-        return period;
+    public String getCode() {
+        return code;
     }
 
-    public void setPeriod(double period) {
-        this.period = period;
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    private double advanceNotice;
+    private double cost;
 
-    public double getAdvanceNotice() {
-        return advanceNotice;
+    public double getCost() {
+        return cost;
     }
 
-    public void setAdvanceNotice(double advanceNotice) {
-        this.advanceNotice = advanceNotice;
+    public void setCost(double cost) {
+        this.cost = cost;
     }
-
-    private String description;
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
 }

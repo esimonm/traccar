@@ -229,4 +229,13 @@ public class Device extends GroupedModel {
         this.registry = registry;
     }
 
+    private long baseId;
+
+    public long getBaseId() {
+        return baseId;
+    }
+
+    public void setBaseId(long baseId) {
+        this.baseId = baseId;
+    }
 }

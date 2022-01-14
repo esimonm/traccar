@@ -17,11 +17,7 @@
 package org.traccar.database;
 
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -29,6 +25,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.traccar.model.BaseModel;
+import org.traccar.model.MaintenanceItem;
 
 public class BaseObjectManager<T extends BaseModel> {
 
@@ -75,6 +72,22 @@ public class BaseObjectManager<T extends BaseModel> {
         try {
             readLock();
             return items.get(itemId);
+        } finally {
+            readUnlock();
+        }
+    }
+
+    public List<T> getByRelatedId(long relatedItemId) {
+        try {
+            readLock();
+            List<T> values = new ArrayList<T>();
+            for (Map.Entry<Long, T> entry : items.entrySet()) {
+                T value = entry.getValue();
+                if (((MaintenanceItem)value).getMaintenanceId() == relatedItemId) {
+                    values.add(value);
+                }
+            }
+            return values;
         } finally {
             readUnlock();
         }

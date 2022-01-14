@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd"
+  logicalFilePath="changelog-4.15.4">
+
+  <changeSet author="author" id="changelog-4.15.4">
+
+    <createTable tableName="tc_assignments">
+      <column name="id" type="INT" autoIncrement="true">
+        <constraints primaryKey="true" />
+      </column>
+      <column name="deviceid" type="INT">
+        <constraints nullable="true" />
+      </column>
+      <column name="companyid" type="INT">
+        <constraints nullable="true" />
+      </column>
+      <column name="worksiteid" type="INT">
+        <constraints nullable="true" />
+      </column>
+      <column name="price" type="DOUBLE" defaultValueNumeric="0">
+        <constraints nullable="false" />
+      </column>
+      <column name="datestart" type="TIMESTAMP">
+        <constraints nullable="false" />
+      </column>
+      <column name="dateend" type="TIMESTAMP">
+        <constraints nullable="false" />
+      </column>
+      <column name="odometerstart" type="DOUBLE" defaultValueNumeric="0">
+        <constraints nullable="false" />
+      </column>
+      <column name="odometerend" type="DOUBLE" defaultValueNumeric="0">
+        <constraints nullable="false" />
+      </column>
+      <column name="hoursstart" type="DOUBLE" defaultValueNumeric="0">
+        <constraints nullable="false" />
+      </column>
+      <column name="hoursend" type="DOUBLE" defaultValueNumeric="0">
+        <constraints nullable="false" />
+      </column>
+      <column name="hoursmaxday" type="DOUBLE" defaultValueNumeric="0">
+        <constraints nullable="false" />
+      </column>
+      <column name="hoursmaxmonth" type="DOUBLE" defaultValueNumeric="0">
+        <constraints nullable="false" />
+      </column>
+      <column name="attributes" type="VARCHAR(4000)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <createTable tableName="tc_worksites">
+      <column name="id" type="INT" autoIncrement="true">
+        <constraints primaryKey="true" />
+      </column>
+      <column name="name" type="VARCHAR(100)" />
+      <column name="address" type="VARCHAR(100)" />
+      <column name="city" type="VARCHAR(100)" />
+      <column name="state" type="VARCHAR(100)" />
+      <column name="country" type="VARCHAR(100)" />
+      <column name="zip" type="VARCHAR(100)" />
+      <column name="phone" type="VARCHAR(100)" />
+      <column name="contact" type="VARCHAR(100)" />
+      <column name="companyid" type="INT">
+        <constraints nullable="true" />
+      </column>
+      <column name="geofenceid" type="INT">
+        <constraints nullable="true" />
+      </column>
+      <column name="attributes" type="VARCHAR(4000)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <createTable tableName="tc_companies">
+      <column name="id" type="INT" autoIncrement="true">
+        <constraints primaryKey="true" />
+      </column>
+      <column name="name" type="VARCHAR(100)" />
+      <column name="address" type="VARCHAR(100)" />
+      <column name="city" type="VARCHAR(100)" />
+      <column name="state" type="VARCHAR(100)" />
+      <column name="country" type="VARCHAR(100)" />
+      <column name="zip" type="VARCHAR(100)" />
+      <column name="phone" type="VARCHAR(100)" />
+      <column name="contact" type="VARCHAR(100)" />
+      <column name="registration" type="VARCHAR(100)" />
+      <column name="attributes" type="VARCHAR(4000)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <addColumn tableName="tc_services">
+      <column name="assignmentid" type="INT">
+        <constraints nullable="true" />
+      </column>
+    </addColumn>
+
+    <addColumn tableName="tc_maintenance_item">
+      <column name="id" type="INT" autoIncrement="true">
+        <constraints primaryKey="true" />
+      </column>
+    </addColumn>
+
+    <addForeignKeyConstraint baseTableName="tc_assignments" baseColumnNames="deviceid" constraintName="fk_assignments_deviceid" onDelete="SET NULL" referencedColumnNames="id" referencedTableName="tc_devices" />
+    <addForeignKeyConstraint baseTableName="tc_assignments" baseColumnNames="companyid" constraintName="fk_assignments_companyid" onDelete="SET NULL" referencedColumnNames="id" referencedTableName="tc_companies" />
+    <addForeignKeyConstraint baseTableName="tc_assignments" baseColumnNames="worksiteid" constraintName="fk_assignments_worksiteid" onDelete="SET NULL" referencedColumnNames="id" referencedTableName="tc_worksites" />
+
+    <addForeignKeyConstraint baseTableName="tc_worksites" baseColumnNames="companyid" constraintName="fk_worksites_companyid" onDelete="SET NULL" referencedColumnNames="id" referencedTableName="tc_companies" />
+    <addForeignKeyConstraint baseTableName="tc_worksites" baseColumnNames="geofenceid" constraintName="fk_worksites_geofenceid" onDelete="SET NULL" referencedColumnNames="id" referencedTableName="tc_geofences" />
+
+    <addForeignKeyConstraint baseTableName="tc_services" baseColumnNames="assignmentid" constraintName="fk_services_assignmentid" onDelete="SET NULL" referencedColumnNames="id" referencedTableName="tc_assignments" />
+
+    <createTable tableName="tc_group_assignment">
+      <column name="groupid" type="INT">
+        <constraints nullable="false" />
+      </column>
+      <column name="assignmentid" type="INT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+    <createTable tableName="tc_group_company">
+      <column name="groupid" type="INT">
+        <constraints nullable="false" />
+      </column>
+      <column name="companyid" type="INT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+    <createTable tableName="tc_group_worksite">
+      <column name="groupid" type="INT">
+        <constraints nullable="false" />
+      </column>
+      <column name="worksiteid" type="INT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <createTable tableName="tc_user_assignment">
+      <column name="userid" type="INT">
+        <constraints nullable="false" />
+      </column>
+      <column name="assignmentid" type="INT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+    <createTable tableName="tc_user_company">
+      <column name="userid" type="INT">
+        <constraints nullable="false" />
+      </column>
+      <column name="companyid" type="INT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+    <createTable tableName="tc_user_worksite">
+      <column name="userid" type="INT">
+        <constraints nullable="false" />
+      </column>
+      <column name="worksiteid" type="INT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <createTable tableName="tc_device_assignment">
+      <column name="deviceid" type="INT">
+        <constraints nullable="false" />
+      </column>
+      <column name="assignmentid" type="INT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+    <createTable tableName="tc_device_company">
+      <column name="deviceid" type="INT">
+        <constraints nullable="false" />
+      </column>
+      <column name="companyid" type="INT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+    <createTable tableName="tc_device_worksite">
+      <column name="deviceid" type="INT">
+        <constraints nullable="false" />
+      </column>
+      <column name="worksiteid" type="INT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint baseTableName="tc_group_assignment" baseColumnNames="assignmentid" constraintName="fk_group_assignment_assignmentid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_assignments" />
+    <addForeignKeyConstraint baseTableName="tc_group_assignment" baseColumnNames="groupid" constraintName="fk_group_assignment_groupid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_groups" />
+
+    <addForeignKeyConstraint baseTableName="tc_group_company" baseColumnNames="companyid" constraintName="fk_group_company_companyid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_companies" />
+    <addForeignKeyConstraint baseTableName="tc_group_company" baseColumnNames="groupid" constraintName="fk_group_company_groupid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_groups" />
+
+    <addForeignKeyConstraint baseTableName="tc_group_worksite" baseColumnNames="worksiteid" constraintName="fk_group_worksite_worksiteid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_worksites" />
+    <addForeignKeyConstraint baseTableName="tc_group_worksite" baseColumnNames="groupid" constraintName="fk_group_worksite_groupid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_groups" />
+
+    <addForeignKeyConstraint baseTableName="tc_user_assignment" baseColumnNames="assignmentid" constraintName="fk_user_assignment_assignmentid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_assignments" />
+    <addForeignKeyConstraint baseTableName="tc_user_assignment" baseColumnNames="userid" constraintName="fk_user_assignment_userid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_users" />
+
+    <addForeignKeyConstraint baseTableName="tc_user_company" baseColumnNames="companyid" constraintName="fk_user_company_companyid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_companies" />
+    <addForeignKeyConstraint baseTableName="tc_user_company" baseColumnNames="userid" constraintName="fk_user_company_userid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_users" />
+
+    <addForeignKeyConstraint baseTableName="tc_user_worksite" baseColumnNames="worksiteid" constraintName="fk_user_worksite_worksiteid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_worksites" />
+    <addForeignKeyConstraint baseTableName="tc_user_worksite" baseColumnNames="userid" constraintName="fk_user_worksite_userid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_users" />
+
+    <addForeignKeyConstraint baseTableName="tc_device_assignment" baseColumnNames="assignmentid" constraintName="fk_device_assignment_assignmentid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_assignments" />
+    <addForeignKeyConstraint baseTableName="tc_device_assignment" baseColumnNames="deviceid" constraintName="fk_device_assignment_deviceid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_devices" />
+
+    <addForeignKeyConstraint baseTableName="tc_device_company" baseColumnNames="companyid" constraintName="fk_device_company_companyid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_companies" />
+    <addForeignKeyConstraint baseTableName="tc_device_company" baseColumnNames="deviceid" constraintName="fk_device_company_deviceid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_devices" />
+
+    <addForeignKeyConstraint baseTableName="tc_device_worksite" baseColumnNames="worksiteid" constraintName="fk_device_worksite_worksiteid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_worksites" />
+    <addForeignKeyConstraint baseTableName="tc_device_worksite" baseColumnNames="deviceid" constraintName="fk_device_worksite_deviceid" onDelete="CASCADE" referencedColumnNames="id" referencedTableName="tc_devices" />
+
+  </changeSet>
+
+</databaseChangeLog>

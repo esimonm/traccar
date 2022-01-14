@@ -39,6 +39,13 @@ import org.traccar.model.Event;
 import org.traccar.model.Geofence;
 import org.traccar.model.Group;
 import org.traccar.model.Maintenance;
+import org.traccar.model.Service;
+import org.traccar.model.Item;
+import org.traccar.model.ItemType;
+import org.traccar.model.MaintenanceItem;
+import org.traccar.model.Assignment;
+import org.traccar.model.Company;
+import org.traccar.model.Worksite;
 import org.traccar.model.ManagedUser;
 import org.traccar.model.Notification;
 import org.traccar.model.Order;
@@ -54,11 +61,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class DataManager {
 
@@ -216,13 +219,14 @@ public class DataManager {
     public String getQuery(String action, Class<?> clazz, boolean extended) {
         String queryName;
         if (action.equals(ACTION_SELECT_ALL)) {
-            queryName = "database.select" + clazz.getSimpleName() + "s";
+            queryName = "database.select" + clazz.getSimpleName().toLowerCase(Locale.ROOT) + "s";
         } else {
-            queryName = "database." + action.toLowerCase() + clazz.getSimpleName();
+            queryName = "database." + action.toLowerCase() + clazz.getSimpleName().toLowerCase(Locale.ROOT);
             if (extended) {
                 queryName += "Extended";
             }
         }
+        System.out.println(queryName);
         String query = config.getString(queryName);
         if (query == null) {
             if (generateQueries) {
@@ -231,6 +235,7 @@ public class DataManager {
                 LOGGER.info("Query not provided: " + queryName);
             }
         }
+        System.out.println(query);
         return query;
     }
 
@@ -238,13 +243,13 @@ public class DataManager {
         String queryName;
         switch (action) {
             case ACTION_SELECT_ALL:
-                queryName = "database.select" + owner.getSimpleName() + property.getSimpleName() + "s";
+                queryName = "database.select" + owner.getSimpleName().toLowerCase(Locale.ROOT) + property.getSimpleName().toLowerCase(Locale.ROOT) + "s";
                 break;
             case ACTION_INSERT:
-                queryName = "database.link" + owner.getSimpleName() + property.getSimpleName();
+                queryName = "database.link" + owner.getSimpleName().toLowerCase(Locale.ROOT) + property.getSimpleName().toLowerCase(Locale.ROOT);
                 break;
             default:
-                queryName = "database.unlink" + owner.getSimpleName() + property.getSimpleName();
+                queryName = "database.unlink" + owner.getSimpleName().toLowerCase(Locale.ROOT) + property.getSimpleName().toLowerCase(Locale.ROOT);
                 break;
         }
         String query = config.getString(queryName);
@@ -256,6 +261,7 @@ public class DataManager {
                 LOGGER.info("Query not provided: " + queryName);
             }
         }
+        System.out.println(query);
         return query;
     }
 
@@ -264,16 +270,30 @@ public class DataManager {
         if (propertyName.equals("ManagedUser")) {
             propertyName = "User";
         }
-        return "tc_" + Introspector.decapitalize(owner.getSimpleName())
-                + "_" + Introspector.decapitalize(propertyName);
+        return "tc_" + Introspector.decapitalize(owner.getSimpleName().toLowerCase(Locale.ROOT))
+                + "_" + Introspector.decapitalize(propertyName.toLowerCase(Locale.ROOT));
     }
 
     private static String getObjectsTableName(Class<?> clazz) {
-        String result = "tc_" + Introspector.decapitalize(clazz.getSimpleName());
+        System.out.println(clazz.getSimpleName().toLowerCase(Locale.ROOT));
+
+        String result = "tc_" + Introspector.decapitalize(clazz.getSimpleName().toLowerCase(Locale.ROOT));
         // Add "s" ending if object name is not plural already
         if (!result.endsWith("s")) {
             result += "s";
         }
+
+        // Make change for MaintenanceItem
+        if (clazz.getSimpleName().toLowerCase(Locale.ROOT).equals("maintenanceitem")) {
+            result = "tc_maintenance_item";
+        }
+
+        // Make change for Company
+        if (clazz.getSimpleName().toLowerCase(Locale.ROOT).equals("company")) {
+            result = "tc_companies";
+        }
+
+        System.out.println(result);
         return result;
     }
 
@@ -387,6 +407,18 @@ public class DataManager {
                 return Command.class;
             case "maintenance":
                 return Maintenance.class;
+            case "service":
+                return Service.class;
+            case "item":
+                return Item.class;
+            case "itemtype":
+                return ItemType.class;
+            case "assignment":
+                return Assignment.class;
+            case "company":
+                return Company.class;
+            case "worksite":
+                return Worksite.class;
             case "notification":
                 return Notification.class;
             case "order":
@@ -397,7 +429,7 @@ public class DataManager {
     }
 
     private static String makeNameId(Class<?> clazz) {
-        String name = clazz.getSimpleName();
+        String name = clazz.getSimpleName().toLowerCase(Locale.ROOT);
         return Introspector.decapitalize(name) + (!name.contains("Id") ? "Id" : "");
     }
 
@@ -427,9 +459,12 @@ public class DataManager {
     }
 
     public void addObject(BaseModel entity) throws SQLException {
-        entity.setId(QueryBuilder.create(dataSource, getQuery(ACTION_INSERT, entity.getClass()), true)
-                .setObject(entity)
-                .executeUpdate());
+        entity.setId(
+                QueryBuilder
+                        .create(dataSource, getQuery(ACTION_INSERT, entity.getClass()), true)
+                        .setObject(entity)
+                        .executeUpdate()
+        );
     }
 
     public void updateObject(BaseModel entity) throws SQLException {

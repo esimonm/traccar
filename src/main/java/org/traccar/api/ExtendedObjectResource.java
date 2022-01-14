@@ -36,8 +36,12 @@ public class ExtendedObjectResource<T extends BaseModel> extends BaseObjectResou
 
     @GET
     public Collection<T> get(
-            @QueryParam("all") boolean all, @QueryParam("userId") long userId, @QueryParam("groupId") long groupId,
-            @QueryParam("deviceId") long deviceId, @QueryParam("refresh") boolean refresh) throws SQLException {
+            @QueryParam("all") boolean all,
+            @QueryParam("userId") long userId,
+            @QueryParam("groupId") long groupId,
+            @QueryParam("deviceId") long deviceId,
+            @QueryParam("maintenanceId") long maintenanceId,
+            @QueryParam("refresh") boolean refresh) throws SQLException {
 
         ExtendedObjectManager<T> manager = (ExtendedObjectManager<T>) Context.getManager(getBaseClass());
         if (refresh) {
@@ -54,6 +58,12 @@ public class ExtendedObjectResource<T extends BaseModel> extends BaseObjectResou
         if (deviceId != 0) {
             Context.getPermissionsManager().checkDevice(getUserId(), deviceId);
             result.retainAll(manager.getDeviceItems(deviceId));
+        }
+
+        if (maintenanceId != 0) {
+            System.out.println("maintenanceId: " + maintenanceId);
+            Context.getPermissionsManager().checkMaintenance(getUserId(), maintenanceId);
+            result.retainAll(manager.getMaintenanceItems(maintenanceId));
         }
 
         return manager.getItems(result);
